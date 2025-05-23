@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>IRW Member Registration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+      min-height: 100vh;
+      font-size: 24px;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 100%;
+      background-color: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    
+    .logo {
+      width: 250px;
+      height: auto;
+      margin: 0 auto 35px;
+      display: block;
+    }
+    
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 35px;
+      font-size: 32px;
+      text-align: center;
+    }
+    
+    input {
+      width: 100%;
+      padding: 25px;
+      margin-bottom: 30px;
+      border: 3px solid #ddd;
+      border-radius: 15px;
+      font-size: 24px;
+      text-align: center;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 25px;
+      border: none;
+      border-radius: 15px;
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      margin: 20px 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    
+    .btn-search {
+      background: linear-gradient(to right, #ff4444, #cc0000);
+    }
+    
+    .btn-register {
+      background: linear-gradient(to right, #00c851, #007e33);
+    }
+    
+    .member-info {
+      margin-top: 30px;
+      padding: 25px;
+      background-color: #f0f8ff;
+      border-radius: 15px;
+      border: 2px solid #e0f0ff;
+      display: none;
+    }
+    
+    .info-row {
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    
+    .info-label {
+      font-weight: bold;
+      color: #555;
+      display: inline-block;
+      min-width: 120px;
+    }
+    
+    .error {
+      color: #d32f2f;
+      margin: 25px 0;
+      text-align: center;
+      font-weight: bold;
+      font-size: 22px;
+      padding: 15px;
+      background-color: #ffebee;
+      border-radius: 10px;
+    }
+    
+    .stats-btn {
+      position: fixed;
+      top: 25px;
+      left: 25px;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      color: white;
+      border: none;
+      font-weight: bold;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .stats-panel {
+      position: fixed;
+      top: 110px;
+      left: 25px;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      z-index: 99;
+      display: none;
+      width: calc(100% - 50px);
+      max-width: 300px;
+    }
+    
+    .stat-row {
+      margin-bottom: 20px;
+      font-size: 22px;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .stat-label {
+      font-weight: bold;
+      color: #555;
+    }
+    
+    .stat-value {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    /* Popup Notification */
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #4CAF50;
+      color: white;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+      z-index: 1000;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .popup-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+    
+    /* Overlay when popup is visible */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      display: none;
+    }
+
+    @media (max-width: 400px) {
+      body {
+        font-size: 26px;
+        padding: 15px;
+      }
+      
+      .container {
+        padding: 25px;
+      }
+      
+      input {
+        padding: 22px;
+        font-size: 22px;
+      }
+      
+      .btn {
+        padding: 22px;
+        font-size: 22px;
+      }
+      
+      .popup {
+        padding: 25px;
+        font-size: 22px;
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Popup Notification -->
+  <div class="overlay" id="overlay"></div>
+  <div class="popup" id="successPopup">
+    <div class="popup-icon">✓</div>
+    <div>Registration Successful!</div>
+  </div>
+
+  <!-- Stats Button -->
+  <button class="stats-btn" id="statsBtn">📊</button>
+  <div class="stats-panel" id="statsPanel">
+    <div class="stat-row">
+      <span class="stat-label">Total:</span>
+      <span class="stat-value" id="totalAttendees">0</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Male:</span>
+      <span class="stat-value" id="maleAttendees">0</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Female:</span>
+      <span class="stat-value" id="femaleAttendees">0</span>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <img src="https://i.postimg.cc/02SMH0MR/irw-m.png" alt="IRW Logo" class="logo">
+    <h1>IRW Member Registration</h1>
+    
+    <input type="text" id="idCode" placeholder="Enter Member ID (e.g. 16011)" autofocus>
+    
+    <button class="btn btn-search" id="searchBtn">SEARCH MEMBER</button>
+    
+    <div id="error" class="error"></div>
+    
+    <div id="memberInfo" class="member-info">
+      <div class="info-row">
+        <span class="info-label">ID:</span>
+        <span id="displayIdCode"></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Name:</span>
+        <span id="displayName"></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Gender:</span>
+        <span id="displayGender"></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Mobile:</span>
+        <span id="displayMobile"></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">District:</span>
+        <span id="displayDistrict"></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Group:</span>
+        <span id="displayGroup"></span>
+      </div>
+      
+      <button class="btn btn-register" id="registerBtn">REGISTER ATTENDANCE</button>
+    </div>
+  </div>
+
+  <script>
+    let currentMember = null;
+    let isRegistering = false;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      loadStats();
+      
+      // Stats button toggle
+      document.getElementById('statsBtn').addEventListener('click', function() {
+        const panel = document.getElementById('statsPanel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+      });
+      
+      // Button event listeners
+      document.getElementById('searchBtn').addEventListener('click', searchMember);
+      document.getElementById('registerBtn').addEventListener('click', registerMember);
+      
+      // Enter key support
+      document.getElementById('idCode').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          searchMember();
+        }
+      });
+    });
+    
+    function loadStats() {
+      google.script.run
+        .withSuccessHandler(updateStats)
+        .withFailureHandler(showError)
+        .getAttendanceStats();
+    }
+    
+    function updateStats(stats) {
+      if (stats.error) return;
+      document.getElementById('totalAttendees').textContent = stats.total;
+      document.getElementById('maleAttendees').textContent = stats.male;
+      document.getElementById('femaleAttendees').textContent = stats.female;
+    }
+    
+    function searchMember() {
+      if (isRegistering) return;
+      
+      // Clear previous results immediately when searching
+      document.getElementById('memberInfo').style.display = 'none';
+      document.getElementById('error').textContent = '';
+      
+      const idCode = document.getElementById('idCode').value.trim();
+      if (!idCode) {
+        showError("Please enter an ID Code");
+        return;
+      }
+      
+      document.getElementById('searchBtn').disabled = true;
+      
+      google.script.run
+        .withSuccessHandler(displayMember)
+        .withFailureHandler(showError)
+        .getMemberData(idCode);
+    }
+    
+    function displayMember(result) {
+      document.getElementById('searchBtn').disabled = false;
+      
+      if (result.error) {
+        // Clear all member info when error occurs
+        clearMemberInfo();
+        showError(result.error);
+        return;
+      }
+      
+      currentMember = result;
+      document.getElementById('displayIdCode').textContent = result.idCode || 'N/A';
+      document.getElementById('displayName').textContent = result.name || 'N/A';
+      document.getElementById('displayGender').textContent = result.gender || 'N/A';
+      document.getElementById('displayMobile').textContent = result.mobile || 'N/A';
+      document.getElementById('displayDistrict').textContent = result.district || 'N/A';
+      document.getElementById('displayGroup').textContent = result.group || 'N/A';
+      
+      const registerBtn = document.getElementById('registerBtn');
+      registerBtn.disabled = false;
+      registerBtn.textContent = "REGISTER ATTENDANCE";
+      
+      document.getElementById('memberInfo').style.display = 'block';
+    }
+    
+    function registerMember() {
+      if (!currentMember || isRegistering) return;
+      
+      isRegistering = true;
+      const btn = document.getElementById('registerBtn');
+      btn.disabled = true;
+      btn.textContent = "REGISTERING...";
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          isRegistering = false;
+          if (result.success) {
+            // Show success popup
+            document.getElementById('successPopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+            
+            // Hide after 2 seconds and reset form
+            setTimeout(function() {
+              document.getElementById('successPopup').style.display = 'none';
+              document.getElementById('overlay').style.display = 'none';
+              resetForm();
+              loadStats();
+            }, 2000);
+          } else {
+            showError(result.error || "Registration failed");
+            btn.disabled = false;
+            btn.textContent = "REGISTER ATTENDANCE";
+          }
+        })
+        .withFailureHandler(function(error) {
+          isRegistering = false;
+          showError(error.message || error);
+          btn.disabled = false;
+          btn.textContent = "REGISTER ATTENDANCE";
+        })
+        .markAttendance(currentMember.rowNumber);
+    }
+    
+    function clearMemberInfo() {
+      document.getElementById('displayIdCode').textContent = '';
+      document.getElementById('displayName').textContent = '';
+      document.getElementById('displayGender').textContent = '';
+      document.getElementById('displayMobile').textContent = '';
+      document.getElementById('displayDistrict').textContent = '';
+      document.getElementById('displayGroup').textContent = '';
+      document.getElementById('memberInfo').style.display = 'none';
+    }
+    
+    function resetForm() {
+      document.getElementById('idCode').value = '';
+      clearMemberInfo();
+      document.getElementById('error').textContent = '';
+      document.getElementById('idCode').focus();
+    }
+    
+    function showError(message) {
+      document.getElementById('error').textContent = message;
+    }
+  </script>
+</body>
+</html>
